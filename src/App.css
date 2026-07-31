@@ -1,0 +1,51 @@
+:root {
+  font-family:
+    "JetBrains Mono",
+    "Cascadia Code",
+    Consolas,
+    monospace;
+
+  color: #eceff1;
+  background: #111315;
+  font-synthesis: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-width: 320px;
+  min-height: 100%;
+  margin: 0;
+}
+
+button,
+select {
+  font: inherit;
+}
+.app__main {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 260px;
+  gap: 24px;
+}
+
+
+@media (max-width: 800px) {
+  .app__main {
+    grid-template-columns: 1fr;
+  }
+}
+
+.visualization {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  min-height: 360px;
+  overflow: hidden;
+  background: #1b1e22;
+  border: 1px solid rgb(255 255 255 / 20%);
+  border-radius: 6px;
+}
