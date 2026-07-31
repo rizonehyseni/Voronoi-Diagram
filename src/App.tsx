@@ -26,7 +26,10 @@ function App() {
 
       <div className="app__main">
         <section>
-          <VisualizationArea points={points} />
+          <VisualizationArea
+            points={points}
+            metric={metric}
+          />
 
           <div className="app__commands">
             <button type="button" onClick={resetPoints}>
