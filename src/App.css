@@ -49,3 +49,33 @@ select {
   border: 1px solid rgb(255 255 255 / 20%);
   border-radius: 6px;
 }
+
+.visualization__canvas,
+.visualization__overlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.visualization__canvas {
+  display: block;
+}
+
+.visualization__overlay {
+  pointer-events: none;
+}
+
+.visualization__overlay circle {
+  fill: #f4f5f6;
+  stroke: #111315;
+  stroke-width: 1.5px;
+}
+
+.visualization__overlay text {
+  fill: #f4f5f6;
+  font-size: 3px;
+  paint-order: stroke;
+  stroke: #111315;
+  stroke-width: 0.7px;
+}
