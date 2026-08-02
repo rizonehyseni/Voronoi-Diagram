@@ -129,3 +129,8 @@ select {
   stroke: #111315;
   stroke-width: 0.6px;
 }
+
+.visualization__canvas {
+  display: block;
+  image-rendering: pixelated;
+}

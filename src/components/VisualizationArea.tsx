@@ -72,11 +72,7 @@ function VisualizationArea({
 
       const bounds = activeContainer.getBoundingClientRect();
       const devicePixelRatio = window.devicePixelRatio || 1;
-
-      // Render at half resolution for faster calculations.
-      const calculationScale = previewPoint
-        ? 0.2
-        : 0.5;
+      const calculationScale = 0.5;
 
       const width = Math.max(
         1,
