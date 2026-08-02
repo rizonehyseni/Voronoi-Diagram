@@ -123,8 +123,7 @@ function App() {
         <h1>Voronoi Diagram</h1>
 
         <p>
-          The definition of distance determines the
-          shape of space.
+          One set of points. Three ways to divide space.
         </p>
       </header>
 
@@ -159,11 +158,12 @@ function App() {
         </section>
 
         <aside className="app__sidebar">
-          <label htmlFor="metric">
+          <label className="metric-label" htmlFor="metric">
             Distance metric
           </label>
 
           <select
+            className="metric-select"
             id="metric"
             value={metric}
             onChange={(event) =>

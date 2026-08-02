@@ -38,12 +38,59 @@ function VisualizationArea({
   onSelectPoint,
 }: VisualizationAreaProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const svgRef = useRef<SVGSVGElement>(null);
+
+  const [svgSize, setSvgSize] = useState({
+    width: 1,
+    height: 1,
+  });
 
   const draggingPointIdRef =
     useRef<string | null>(null);
 
   const [previewPoint, setPreviewPoint] =
   useState<Point2D | null>(null);  
+
+  useEffect(() => {
+  const svg = svgRef.current;
+
+  if (!svg) {
+    return;
+  }
+
+  const activeSvg = svg;
+
+  function updateSvgSize() {
+    const bounds =
+      activeSvg.getBoundingClientRect();
+
+    setSvgSize((currentSize) => {
+      const width = Math.max(1, bounds.width);
+      const height = Math.max(1, bounds.height);
+
+      if (
+        currentSize.width === width &&
+        currentSize.height === height
+      ) {
+        return currentSize;
+      }
+
+      return { width, height };
+    });
+  }
+
+  updateSvgSize();
+
+  const resizeObserver = new ResizeObserver(
+    updateSvgSize,
+  );
+
+  resizeObserver.observe(activeSvg);
+
+  return () => {
+    resizeObserver.disconnect();
+  };
+}, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -265,8 +312,9 @@ function handlePointerLeave() {
       />
 
       <svg
+        ref={svgRef}
         className="visualization__overlay"
-        viewBox="0 0 100 100"
+        viewBox={`0 0 ${svgSize.width} ${svgSize.height}`}
         preserveAspectRatio="none"
         aria-label="Voronoi seed points"
         onPointerDown={handlePointerDown}
@@ -286,15 +334,23 @@ function handlePointerLeave() {
             }
           >
             <circle
-              cx={point.x * 100}
-              cy={point.y * 100}
-              r="1.2"
+              className="seed__hit-area"
+              cx={point.x * svgSize.width}
+              cy={point.y * svgSize.height}
+              r="12"
+            />
+
+            <circle
+              className="seed__dot"
+              cx={point.x * svgSize.width}
+              cy={point.y * svgSize.height}
+              r="4.5"
               vectorEffect="non-scaling-stroke"
             />
 
             <text
-              x={point.x * 100 + 2}
-              y={point.y * 100 - 2}
+              x={point.x * svgSize.width + 9}
+              y={point.y * svgSize.height - 9}
               vectorEffect="non-scaling-stroke"
             >
               {point.id}
@@ -304,15 +360,16 @@ function handlePointerLeave() {
         {previewPoint && (
           <g className="seed-preview">
             <circle
-              cx={previewPoint.x * 100}
-              cy={previewPoint.y * 100}
-              r="1.5"
+              cx={previewPoint.x * svgSize.width}
+              cy={previewPoint.y * svgSize.height}
+              r="5"
               vectorEffect="non-scaling-stroke"
             />
 
             <text
-              x={previewPoint.x * 100 + 2}
-              y={previewPoint.y * 100 - 2}
+              x={previewPoint.x * svgSize.width + 9}
+              y={previewPoint.y * svgSize.height - 9}
+              
               vectorEffect="non-scaling-stroke"
             >
               Click to place
