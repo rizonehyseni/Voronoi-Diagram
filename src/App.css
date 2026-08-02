@@ -63,7 +63,9 @@ select {
 }
 
 .visualization__overlay {
-  pointer-events: none;
+    pointer-events: auto;
+    touch-action: none;
+    cursor: crosshair;
 }
 
 .visualization__overlay circle {
@@ -78,4 +80,52 @@ select {
   paint-order: stroke;
   stroke: #111315;
   stroke-width: 0.7px;
+}
+
+.seed {
+  cursor: grab;
+}
+
+.seed:active {
+  cursor: grabbing;
+}
+
+.seed circle {
+  transition:
+    r 120ms ease,
+    stroke-width 120ms ease;
+}
+
+.seed--selected circle {
+  r: 2;
+  fill: #ffffff;
+  stroke: #111315;
+  stroke-width: 2px;
+}
+
+.seed text {
+  pointer-events: none;
+}
+
+.app__commands button:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.seed-preview {
+  pointer-events: none;
+}
+
+.seed-preview circle {
+  fill: rgb(255 255 255 / 45%);
+  stroke: #ffffff;
+  stroke-width: 1.5px;
+  stroke-dasharray: 3 2;
+}
+
+.seed-preview text {
+  fill: rgb(255 255 255 / 75%);
+  font-size: 2.4px;
+  stroke: #111315;
+  stroke-width: 0.6px;
 }
