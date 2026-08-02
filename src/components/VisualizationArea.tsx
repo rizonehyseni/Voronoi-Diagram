@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { getRegionColor } from "../geometry/colors";
 import { findNearestPointIndex } from "../geometry/tessellation";
 import type {
@@ -9,6 +9,14 @@ import type {
 interface VisualizationAreaProps {
   points: Point2D[];
   metric: DistanceMetric;
+  selectedPointId: string | null;
+  onAddPoint: (x: number, y: number) => void;
+  onMovePoint: (
+    id: string,
+    x: number,
+    y: number,
+  ) => void;
+  onSelectPoint: (id: string | null) => void;
 }
 
 function hexToRgb(hex: string): [number, number, number] {
@@ -24,8 +32,18 @@ function hexToRgb(hex: string): [number, number, number] {
 function VisualizationArea({
   points,
   metric,
+  selectedPointId,
+  onAddPoint,
+  onMovePoint,
+  onSelectPoint,
 }: VisualizationAreaProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  const draggingPointIdRef =
+    useRef<string | null>(null);
+
+  const [previewPoint, setPreviewPoint] =
+  useState<Point2D | null>(null);  
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -41,6 +59,9 @@ function VisualizationArea({
     }
     const activeCanvas = canvas;
     const activeContainer = container;
+    const calculationPoints = previewPoint
+      ? [...points, previewPoint]
+      : points;
 
     function renderTessellation() {
       const context = activeCanvas.getContext("2d");
@@ -53,7 +74,9 @@ function VisualizationArea({
       const devicePixelRatio = window.devicePixelRatio || 1;
 
       // Render at half resolution for faster calculations.
-      const calculationScale = 0.5;
+      const calculationScale = previewPoint
+        ? 0.2
+        : 0.5;
 
       const width = Math.max(
         1,
@@ -78,7 +101,7 @@ function VisualizationArea({
 
       context.imageSmoothingEnabled = false;
 
-      if (points.length === 0) {
+      if (calculationPoints.length === 0) {
         context.fillStyle = "#1b1e22";
         context.fillRect(0, 0, width, height);
         return;
@@ -87,7 +110,7 @@ function VisualizationArea({
       const imageData = context.createImageData(width, height);
       const pixels = imageData.data;
 
-      const colors = points.map((_, index) =>
+      const colors = calculationPoints.map((_, index) =>
         hexToRgb(getRegionColor(index)),
       );
 
@@ -99,7 +122,7 @@ function VisualizationArea({
           const ownerIndex = findNearestPointIndex(
             normalizedX,
             normalizedY,
-            points,
+            calculationPoints,
             metric,
           );
 
@@ -127,7 +150,116 @@ function VisualizationArea({
     return () => {
       resizeObserver.disconnect();
     };
-  }, [points, metric]);
+  }, [points, metric, previewPoint]);
+
+  function getPointerCoordinates(
+  event: React.PointerEvent<SVGSVGElement>,
+) {
+  const bounds =
+    event.currentTarget.getBoundingClientRect();
+
+  const x = Math.min(
+    1,
+    Math.max(
+      0,
+      (event.clientX - bounds.left) / bounds.width,
+    ),
+  );
+
+  const y = Math.min(
+    1,
+    Math.max(
+      0,
+      (event.clientY - bounds.top) / bounds.height,
+    ),
+  );
+
+  return { x, y };
+}
+
+function handlePointerDown(
+  event: React.PointerEvent<SVGSVGElement>,
+) {
+  const target = event.target;
+
+  const seedElement =
+    target instanceof Element
+      ? target.closest<SVGGElement>(
+          "[data-seed-id]",
+        )
+      : null;
+
+  const seedId =
+    seedElement?.dataset.seedId ?? null;
+
+  if (seedId) {
+    setPreviewPoint(null);
+    draggingPointIdRef.current = seedId;
+    onSelectPoint(seedId);
+
+    event.currentTarget.setPointerCapture(
+      event.pointerId,
+    );
+
+    return;
+  }
+
+  const coordinates = getPointerCoordinates(event);
+
+  setPreviewPoint(null);
+  onAddPoint(coordinates.x, coordinates.y);
+}
+
+function handlePointerMove(
+  event: React.PointerEvent<SVGSVGElement>,
+) {
+  const coordinates = getPointerCoordinates(event);
+
+  const draggingPointId =
+    draggingPointIdRef.current;
+
+  if (draggingPointId) {
+    setPreviewPoint(null);
+
+    onMovePoint(
+      draggingPointId,
+      coordinates.x,
+      coordinates.y,
+    );
+
+    return;
+  }
+
+  if (event.pointerType === "mouse") {
+    setPreviewPoint({
+      id: "__preview__",
+      x: coordinates.x,
+      y: coordinates.y,
+    });
+  }
+}
+
+function handlePointerUp(
+  event: React.PointerEvent<SVGSVGElement>,
+) {
+  draggingPointIdRef.current = null;
+
+  if (
+    event.currentTarget.hasPointerCapture(
+      event.pointerId,
+    )
+  ) {
+    event.currentTarget.releasePointerCapture(
+      event.pointerId,
+    );
+  }
+}
+
+function handlePointerLeave() {
+  if (!draggingPointIdRef.current) {
+    setPreviewPoint(null);
+  }
+}
 
   return (
     <div className="visualization">
@@ -141,9 +273,22 @@ function VisualizationArea({
         viewBox="0 0 100 100"
         preserveAspectRatio="none"
         aria-label="Voronoi seed points"
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        onPointerCancel={handlePointerUp}
+        onPointerLeave={handlePointerLeave}
       >
         {points.map((point) => (
-          <g key={point.id}>
+          <g
+            key={point.id}
+            data-seed-id={point.id}
+            className={
+              point.id === selectedPointId
+                ? "seed seed--selected"
+                : "seed"
+            }
+          >
             <circle
               cx={point.x * 100}
               cy={point.y * 100}
@@ -160,6 +305,24 @@ function VisualizationArea({
             </text>
           </g>
         ))}
+        {previewPoint && (
+          <g className="seed-preview">
+            <circle
+              cx={previewPoint.x * 100}
+              cy={previewPoint.y * 100}
+              r="1.5"
+              vectorEffect="non-scaling-stroke"
+            />
+
+            <text
+              x={previewPoint.x * 100 + 2}
+              y={previewPoint.y * 100 - 2}
+              vectorEffect="non-scaling-stroke"
+            >
+              Click to place
+            </text>
+          </g>
+        )}
       </svg>
     </div>
   );
