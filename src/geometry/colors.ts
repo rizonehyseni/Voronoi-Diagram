@@ -1,12 +1,13 @@
 export const regionColors = [
   "#cb0095", 
-  "#16b401", 
-  "#c45c3c", 
-  "#9064ff", 
+  "#3db92d", 
+  "#acb5ff", 
+  "#8deafbf4", 
   "#0e16fa", 
   "#eeff35", 
-  "#21b200",
-  "#dd0000",
+  "#176b04",
+  "#b41414",
+  "#f8caf7"
 ];
 
 export function getRegionColor(index: number): string {

@@ -123,8 +123,7 @@ function App() {
         <h1>Voronoi Diagram</h1>
 
         <p>
-          One set of points. Three ways to divide space.
-        </p>
+        A geometric structure that divides a given space into the regions based on the distance to a set of the points.        </p>
       </header>
 
       <div className="app__main">
