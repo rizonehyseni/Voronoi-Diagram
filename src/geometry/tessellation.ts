@@ -45,7 +45,7 @@ export function findNearestPointIndex(
   };
 }
 
-export function findNearestPointIndex(
+export function findNearestPointAssignment(
   x: number,
   y: number,
   points: Point2D[],
