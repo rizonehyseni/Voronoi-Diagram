@@ -34,12 +34,15 @@ function App() {
   const [selectedPointId, setSelectedPointId] =
     useState<string | null>(null);
 
+  const growthProgress = 0.5;  
+
   function addPoint(x: number, y: number) {
     const newPoint: Point2D = {
       id: getNextPointId(points),
       x,
       y,
     };
+
 
     setPoints((currentPoints) => [
       ...currentPoints,
@@ -131,6 +134,7 @@ function App() {
           <VisualizationArea
             points={points}
             metric={metric}
+            growthProgress={growthProgress}
             selectedPointId={selectedPointId}
             onAddPoint={addPoint}
             onMovePoint={movePoint}

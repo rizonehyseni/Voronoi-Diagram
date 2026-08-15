@@ -9,6 +9,7 @@ import type {
 interface VisualizationAreaProps {
   points: Point2D[];
   metric: DistanceMetric;
+  growthProgress: number;
   selectedPointId: string | null;
   onAddPoint: (x: number, y: number) => void;
   onMovePoint: (
@@ -32,6 +33,7 @@ function hexToRgb(hex: string): [number, number, number] {
 function VisualizationArea({
   points,
   metric,
+  growthProgress,
   selectedPointId,
   onAddPoint,
   onMovePoint,
@@ -157,8 +159,14 @@ const grid = createTessellationGrid(
   metric,
 );
 
+const normalizedGrowthProgress = Math.min(
+  1,
+  Math.max(0, growthProgress),
+);
+
 const growthThreshold =
-  grid.maximumArrivalTime * 0.5;
+  grid.maximumArrivalTime *
+  normalizedGrowthProgress;
 
 const imageData = context.createImageData(
   width,
@@ -227,7 +235,7 @@ context.putImageData(imageData, 0, 0);
     return () => {
       resizeObserver.disconnect();
     };
-  }, [points, metric, previewPoint]);
+  }, [points, metric, previewPoint, growthProgress]);
 
   function getPointerCoordinates(
   event: React.PointerEvent<SVGSVGElement>,
