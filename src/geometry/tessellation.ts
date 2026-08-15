@@ -1,21 +1,26 @@
 import { calculateDistance } from "./distance";
 import type {
+  CellAssignment,
   DistanceMetric,
   Point2D,
 } from "../types/geometry";
 
-export function findNearestPointIndex(
+export function findNearestPointAssignment(
   x: number,
   y: number,
   points: Point2D[],
   metric: DistanceMetric,
-): number {
+): CellAssignment {
   if (points.length === 0) {
-    return -1;
+    return {
+      ownerIndex: -1,
+      arrivalTime: Number.POSITIVE_INFINITY,
+    };
   }
 
-  let nearestIndex = 0;
-  let nearestDistance = Number.POSITIVE_INFINITY;
+  let ownerIndex = 0;
+  let arrivalTime = Number.POSITIVE_INFINITY;
+
 
   for (let index = 0; index < points.length; index += 1) {
     const point = points[index];
@@ -28,11 +33,28 @@ export function findNearestPointIndex(
       metric,
     );
 
-    if (distance < nearestDistance) {
-      nearestDistance = distance;
-      nearestIndex = index;
+    if (distance < arrivalTime) {
+      arrivalTime = distance;
+      ownerIndex = index;
     }
   }
 
-  return nearestIndex;
+  return {
+    ownerIndex,
+    arrivalTime,
+  };
+}
+
+export function findNearestPointIndex(
+  x: number,
+  y: number,
+  points: Point2D[],
+  metric: DistanceMetric,
+): number {
+  return findNearestPointAssignment(
+    x,
+    y,
+    points,
+    metric,
+  ).ownerIndex;
 }
