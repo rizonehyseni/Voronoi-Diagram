@@ -5,7 +5,7 @@ import type {
   Point2D,
 } from "../types/geometry";
 
-export function findNearestPointIndex(
+export function findNearestPointAssignment(
   x: number,
   y: number,
   points: Point2D[],
@@ -45,7 +45,7 @@ export function findNearestPointIndex(
   };
 }
 
-export function findNearestPointAssignment(
+export function findNearestPointIndex(
   x: number,
   y: number,
   points: Point2D[],
