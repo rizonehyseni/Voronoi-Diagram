@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import VisualizationArea from "./components/VisualizationArea";
 import { defaultPoints } from "./data/defaultPoints";
+import { useGrowthAnimation } from "./hooks/useGrowthAnimation";
 import type {
   DistanceMetric,
   Point2D,
@@ -34,7 +35,13 @@ function App() {
   const [selectedPointId, setSelectedPointId] =
     useState<string | null>(null);
 
-  const growthProgress = 0.5;  
+  const {
+  progress: growthProgress,
+  status: growthStatus,
+  play: playGrowth,
+  pause: pauseGrowth,
+  restart: restartGrowth,
+} = useGrowthAnimation();
 
   function addPoint(x: number, y: number) {
     const newPoint: Point2D = {
@@ -157,6 +164,37 @@ function App() {
             >
               Delete selected
             </button>
+            
+            {growthStatus === "playing" ? (
+  <button
+    type="button"
+    onClick={pauseGrowth}
+  >
+    Pause Growth
+  </button>
+) : (
+  <button
+    type="button"
+    onClick={playGrowth}
+  >
+    {growthStatus === "paused"
+      ? "Resume Growth"
+      : "Play Growth"}
+  </button>
+)}
+
+<button
+  type="button"
+  onClick={restartGrowth}
+  disabled={
+    growthProgress === 0 &&
+    growthStatus === "idle"
+  }
+>
+  Restart Growth
+</button>
+
+
           </div>
         </section>
 
