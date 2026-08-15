@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect,useRef, useState } from "react";
 import VisualizationArea from "./components/VisualizationArea";
 import { defaultPoints } from "./data/defaultPoints";
 import { useGrowthAnimation } from "./hooks/useGrowthAnimation";
@@ -42,6 +42,11 @@ function App() {
   pause: pauseGrowth,
   restart: restartGrowth,
 } = useGrowthAnimation();
+
+const previousGeometryRef = useRef({
+  points,
+  metric,
+});
 
   function addPoint(x: number, y: number) {
     const newPoint: Point2D = {
@@ -96,6 +101,28 @@ function App() {
     setPoints([]);
     setSelectedPointId(null);
   }
+
+  useEffect(() => {
+  const previousGeometry =
+    previousGeometryRef.current;
+
+  const pointsChanged =
+    previousGeometry.points !== points;
+
+  const metricChanged =
+    previousGeometry.metric !== metric;
+
+  if (!pointsChanged && !metricChanged) {
+    return;
+  }
+
+  previousGeometryRef.current = {
+    points,
+    metric,
+  };
+
+  restartGrowth();
+}, [points, metric, restartGrowth]);
 
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
