@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { getRegionColor } from "../geometry/colors";
-import { findNearestPointIndex } from "../geometry/tessellation";
+import { createTessellationGrid } from "../geometry/grid";
 import type {
   DistanceMetric,
   Point2D,
@@ -150,38 +150,72 @@ function VisualizationArea({
         return;
       }
 
-      const imageData = context.createImageData(width, height);
-      const pixels = imageData.data;
+const grid = createTessellationGrid(
+  width,
+  height,
+  calculationPoints,
+  metric,
+);
 
-      const colors = calculationPoints.map((_, index) =>
-        hexToRgb(getRegionColor(index)),
-      );
+const growthThreshold =
+  grid.maximumArrivalTime * 0.5;
 
-      for (let y = 0; y < height; y += 1) {
-        for (let x = 0; x < width; x += 1) {
-          const normalizedX = (x + 0.5) / width;
-          const normalizedY = (y + 0.5) / height;
+const imageData = context.createImageData(
+  width,
+  height,
+);
 
-          const ownerIndex = findNearestPointIndex(
-            normalizedX,
-            normalizedY,
-            calculationPoints,
-            metric,
-          );
+const pixels = imageData.data;
 
-          const [red, green, blue] = colors[ownerIndex];
-          const pixelIndex = (y * width + x) * 4;
+const colors = calculationPoints.map((_, index) =>
+  hexToRgb(getRegionColor(index)),
+);
 
-          pixels[pixelIndex] = red;
-          pixels[pixelIndex + 1] = green;
-          pixels[pixelIndex + 2] = blue;
-          pixels[pixelIndex + 3] = 185;
-        }
-      }
+const backgroundColor: [number, number, number] = [
+  27,
+  30,
+  34,
+];
 
-      context.putImageData(imageData, 0, 0);
-    }
+for (
+  let cellIndex = 0;
+  cellIndex < grid.owners.length;
+  cellIndex += 1
+) {
+  const pixelIndex = cellIndex * 4;
+  const arrivalTime =
+    grid.arrivalTimes[cellIndex];
 
+  if (arrivalTime > growthThreshold) {
+    pixels[pixelIndex] = backgroundColor[0];
+    pixels[pixelIndex + 1] = backgroundColor[1];
+    pixels[pixelIndex + 2] = backgroundColor[2];
+    pixels[pixelIndex + 3] = 255;
+
+    continue;
+  }
+
+  const ownerIndex = grid.owners[cellIndex];
+
+  if (ownerIndex < 0) {
+    pixels[pixelIndex] = backgroundColor[0];
+    pixels[pixelIndex + 1] = backgroundColor[1];
+    pixels[pixelIndex + 2] = backgroundColor[2];
+    pixels[pixelIndex + 3] = 255;
+
+    continue;
+  }
+
+  const [red, green, blue] = colors[ownerIndex];
+
+  pixels[pixelIndex] = red;
+  pixels[pixelIndex + 1] = green;
+  pixels[pixelIndex + 2] = blue;
+  pixels[pixelIndex + 3] = 225;
+}
+
+context.putImageData(imageData, 0, 0);
+}
     renderTessellation();
 
     const resizeObserver = new ResizeObserver(
