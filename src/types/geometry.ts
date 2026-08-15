@@ -4,6 +4,11 @@ export interface Point2D {
   y: number;
 }
 
+export interface CellAssignment {
+  ownerIndex: number;
+  arrivalTime: number;
+}
+
 export type DistanceMetric =
   | "euclidean"
   | "manhattan"
