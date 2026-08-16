@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect,useRef, useState } from "react";
 import VisualizationArea from "./components/VisualizationArea";
 import { defaultPoints } from "./data/defaultPoints";
+import { useGrowthAnimation } from "./hooks/useGrowthAnimation";
 import type {
   DistanceMetric,
   Point2D,
@@ -34,7 +35,18 @@ function App() {
   const [selectedPointId, setSelectedPointId] =
     useState<string | null>(null);
 
-  const growthProgress = 0.5;  
+  const {
+  progress: growthProgress,
+  status: growthStatus,
+  play: playGrowth,
+  pause: pauseGrowth,
+  showComplete: showCompleteGrowth,
+} = useGrowthAnimation();
+
+const previousGeometryRef = useRef({
+  points,
+  metric,
+});
 
   function addPoint(x: number, y: number) {
     const newPoint: Point2D = {
@@ -80,15 +92,32 @@ function App() {
     setSelectedPointId(null);
   }
 
-  function resetPoints() {
-    setPoints(defaultPoints);
-    setSelectedPointId(null);
-  }
-
   function clearPoints() {
     setPoints([]);
     setSelectedPointId(null);
   }
+
+  useEffect(() => {
+  const previousGeometry =
+    previousGeometryRef.current;
+
+  const pointsChanged =
+    previousGeometry.points !== points;
+
+  const metricChanged =
+    previousGeometry.metric !== metric;
+
+  if (!pointsChanged && !metricChanged) {
+    return;
+  }
+
+  previousGeometryRef.current = {
+    points,
+    metric,
+  };
+
+  showCompleteGrowth();
+}, [points, metric, showCompleteGrowth]);
 
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
@@ -142,10 +171,6 @@ function App() {
           />
 
           <div className="app__commands">
-            <button type="button" onClick={resetPoints}>
-              Reset
-            </button>
-
             <button type="button" onClick={clearPoints}>
               Clear
             </button>
@@ -157,6 +182,25 @@ function App() {
             >
               Delete selected
             </button>
+            
+            {growthStatus === "playing" ? (
+  <button
+    type="button"
+    onClick={pauseGrowth}
+  >
+    Pause Growth
+  </button>
+) : (
+  <button
+    type="button"
+    onClick={playGrowth}
+  >
+    {growthStatus === "paused"
+      ? "Resume Growth"
+      : "Play Growth"}
+  </button>
+)}
+
           </div>
         </section>
 

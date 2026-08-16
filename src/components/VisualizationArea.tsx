@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { getRegionColor } from "../geometry/colors";
-import { createTessellationGrid } from "../geometry/grid";
+import {
+  createTessellationGrid,
+  type TessellationGrid,
+} from "../geometry/grid";
 import type {
   DistanceMetric,
   Point2D,
@@ -18,6 +21,15 @@ interface VisualizationAreaProps {
     y: number,
   ) => void;
   onSelectPoint: (id: string | null) => void;
+}
+
+interface TessellationGridCache {
+  width: number;
+  height: number;
+  points: Point2D[];
+  previewPoint: Point2D | null;
+  metric: DistanceMetric;
+  grid: TessellationGrid;
 }
 
 function hexToRgb(hex: string): [number, number, number] {
@@ -41,6 +53,8 @@ function VisualizationArea({
 }: VisualizationAreaProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
+  const gridCacheRef =
+    useRef<TessellationGridCache | null>(null);
 
   const [svgSize, setSvgSize] = useState({
     width: 1,
@@ -152,12 +166,37 @@ function VisualizationArea({
         return;
       }
 
-const grid = createTessellationGrid(
-  width,
-  height,
-  calculationPoints,
-  metric,
-);
+const cachedGrid = gridCacheRef.current;
+
+let grid: TessellationGrid;
+
+const canReuseGrid =
+  cachedGrid !== null &&
+  cachedGrid.width === width &&
+  cachedGrid.height === height &&
+  cachedGrid.points === points &&
+  cachedGrid.previewPoint === previewPoint &&
+  cachedGrid.metric === metric;
+
+if (canReuseGrid) {
+  grid = cachedGrid.grid;
+} else {
+  grid = createTessellationGrid(
+    width,
+    height,
+    calculationPoints,
+    metric,
+  );
+
+  gridCacheRef.current = {
+    width,
+    height,
+    points,
+    previewPoint,
+    metric,
+    grid,
+  };
+}
 
 const normalizedGrowthProgress = Math.min(
   1,
