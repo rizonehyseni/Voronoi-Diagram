@@ -92,11 +92,6 @@ const previousGeometryRef = useRef({
     setSelectedPointId(null);
   }
 
-  function resetPoints() {
-    setPoints(defaultPoints);
-    setSelectedPointId(null);
-  }
-
   function clearPoints() {
     setPoints([]);
     setSelectedPointId(null);
@@ -176,10 +171,6 @@ const previousGeometryRef = useRef({
           />
 
           <div className="app__commands">
-            <button type="button" onClick={resetPoints}>
-              Reset
-            </button>
-
             <button type="button" onClick={clearPoints}>
               Clear
             </button>
