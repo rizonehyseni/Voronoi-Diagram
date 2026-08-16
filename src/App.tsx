@@ -40,7 +40,7 @@ function App() {
   status: growthStatus,
   play: playGrowth,
   pause: pauseGrowth,
-  restart: restartGrowth,
+  showComplete: showCompleteGrowth,
 } = useGrowthAnimation();
 
 const previousGeometryRef = useRef({
@@ -121,8 +121,8 @@ const previousGeometryRef = useRef({
     metric,
   };
 
-  restartGrowth();
-}, [points, metric, restartGrowth]);
+  showCompleteGrowth();
+}, [points, metric, showCompleteGrowth]);
 
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
@@ -209,18 +209,6 @@ const previousGeometryRef = useRef({
       : "Play Growth"}
   </button>
 )}
-
-<button
-  type="button"
-  onClick={restartGrowth}
-  disabled={
-    growthProgress === 0 &&
-    growthStatus === "idle"
-  }
->
-  Restart Growth
-</button>
-
 
           </div>
         </section>
