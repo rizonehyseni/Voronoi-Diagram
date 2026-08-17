@@ -1,4 +1,4 @@
-import { useEffect,useRef, useState } from "react";
+import {useCallback, useEffect,useRef, useState } from "react";
 import VisualizationArea from "./components/VisualizationArea";
 import { defaultPoints } from "./data/defaultPoints";
 import { useGrowthAnimation } from "./hooks/useGrowthAnimation";
@@ -78,7 +78,7 @@ const previousGeometryRef = useRef({
     );
   }
 
-  function deleteSelectedPoint() {
+  const deleteSelectedPoint = useCallback(() => {
     if (!selectedPointId) {
       return;
     }
@@ -90,7 +90,7 @@ const previousGeometryRef = useRef({
     );
 
     setSelectedPointId(null);
-  }
+  }, [selectedPointId]);
 
   function clearPoints() {
     setPoints([]);
@@ -147,7 +147,7 @@ const previousGeometryRef = useRef({
         handleKeyDown,
       );
     };
-  }, [selectedPointId]);
+  }, [deleteSelectedPoint]);
 
   return (
     <main className="app">
