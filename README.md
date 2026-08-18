@@ -7,11 +7,11 @@ What happens when the meaning of distance changes?
 The same set of points can divide space into smooth regions, sharp diamonds, or rigid squares depending on how “nearest” is calculated.
 This project is an interactive React and TypeScript visualization of Voronoi diagrams under three distance metrics:
 
--Euclidean distance
+- Euclidean distance
 
--Manhattan distance
+- Manhattan distance
 
--Chebyshev distance
+- Chebyshev distance
 
 A Voronoi diagram divides a space into regions based on a collection of points called **seeds** or **sites**.
 
