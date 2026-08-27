@@ -1,6 +1,5 @@
 import {useCallback, useEffect,useRef, useState } from "react";
 import VisualizationArea from "./components/VisualizationArea";
-import { defaultPoints } from "./data/defaultPoints";
 import { useGrowthAnimation } from "./hooks/useGrowthAnimation";
 import type {
   DistanceMetric,
@@ -27,7 +26,7 @@ function getNextPointId(points: Point2D[]): string {
 
 function App() {
   const [points, setPoints] =
-    useState<Point2D[]>(defaultPoints);
+    useState<Point2D[]>([]);
 
   const [metric, setMetric] =
     useState<DistanceMetric>("euclidean");
