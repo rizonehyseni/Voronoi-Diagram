@@ -1,6 +1,6 @@
 <div align="justify"> 
   
-# Voronoi Diagram
+<h1 align="center"> Voronoi Diagram </h1>
 
 What happens when the meaning of distance changes?
 
