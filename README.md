@@ -70,6 +70,10 @@ d_E(A,B)
 ```
 Under this metric, equal-distance growth around a seed forms a **circle**.
 
+<img width="1451" height="823" alt="image" src="https://github.com/user-attachments/assets/b3ccbf20-8cd0-4a2f-9d81-212647cf39d7" />
+
+
+
 ### Manhattan distance
 
 Manhattan distance measures distance when movement is restricted to horizontal and vertical directions.
@@ -81,6 +85,10 @@ d_M(A,B)
 |y_2-y_1|
 ```
 Under this metric, equal-distance growth around a seed forms a **diamond**.
+
+<img width="1449" height="821" alt="image" src="https://github.com/user-attachments/assets/757a8f10-0167-4dfc-a59f-fe088e892814" />
+
+
 
 ### Chebyshev distance
 
@@ -118,4 +126,8 @@ Different values of \(p\) produce different metrics:
 - $p \to \infty$: Chebyshev distance
 
 This relationship demonstrates how changing the definition of distance changes the geometry of space.
+
+<img width="1453" height="823" alt="image" src="https://github.com/user-attachments/assets/1b7b4636-fc42-4c19-9fe7-8970f4036873" />
+
+
 </div>
