@@ -106,6 +106,8 @@ d_C(A,B)
 
 Under this metric, equal-distance growth around a seed forms a **square**.
 
+<img width="1453" height="823" alt="image" src="https://github.com/user-attachments/assets/1b7b4636-fc42-4c19-9fe7-8970f4036873" />
+
 ## Minkowski connection
 
 The three metrics are related through the Minkowski distance family:
@@ -126,8 +128,6 @@ Different values of \(p\) produce different metrics:
 - $p \to \infty$: Chebyshev distance
 
 This relationship demonstrates how changing the definition of distance changes the geometry of space.
-
-<img width="1453" height="823" alt="image" src="https://github.com/user-attachments/assets/1b7b4636-fc42-4c19-9fe7-8970f4036873" />
 
 
 </div>
